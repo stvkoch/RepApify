@@ -27,6 +27,6 @@
     - first "retrieveData" try find aproprieate "repository/source" for the "table"
         - default source is "repository\SourceSimpleAll"
         - source is call and retrieve data using query interpreted
-- after source return data and assign response, all middleware should be call
+- after source return data and assign response, all middleware will be reactivated to process the data received
     - you can create a middleware where remove sensiveData, or save on cache....
 
