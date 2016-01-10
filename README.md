@@ -17,3 +17,16 @@
 
     - in SourceSimpleAll return data from connection insted of SQL
 
+## How work?
+
+- Middleware ParseQuery try find especific interpreter for the "table"
+    - default use Interpreter\SimpleQuery
+    - all interpreter should be return a query where "repository/source" can call
+- After interpreter make a query, app pass to next middleware, until run the route.
+- The route call 'middleware RetrieveData':
+    - first "retrieveData" try find aproprieate "repository/source" for the "table"
+        - default source is "repository\SourceSimpleAll"
+        - source is call and retrieve data using query interpreted
+- after source return data and assign response, all middleware should be call
+    - you can create a middleware where remove sensiveData, or save on cache....
+
