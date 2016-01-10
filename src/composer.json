@@ -1,0 +1,17 @@
+{
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": { "ApiLayer\\": "./" }
+    },
+    "repositories": [
+        {
+            "url": "https://github.com/stvkoch/simple-query",
+            "type": "git"
+        }
+    ],
+    "require": {
+        "robmorgan/phinx": "^0.5.1",
+        "slim/slim": "^3.1",
+        "stvkoch/simple-query": "dev-master"
+    }
+}
