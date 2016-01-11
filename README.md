@@ -1,5 +1,5 @@
 #Install
-
+    git clone https://github.com/stvkoch/RepApify.git
     cd RespApify
     composer install
 
