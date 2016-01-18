@@ -2,9 +2,8 @@
 $container = require('Container.php');
 
 $app = new \Slim\App($container);
-
 $app->group('/api/v1', function () use ($app) {
-    $app->any('/{table}[/{id}]', function($req, $res, $args) {
+    $app->any('/data/{table}[/{id}]', function($req, $res, $args) {
         $middleware = $this->get('retrieveData');
         return $middleware($req, $res);
     })

@@ -3,13 +3,13 @@ namespace ApiLayer\Interpreter;
 
 use Psr\Http\Message\ServerRequestInterface as ReqInterface;
 
-class SimpleQuery {
+class SimpleQuery implements SimpleInterpreterInterface {
 
     protected $mapHttpMethodsToSQLOper = [
-        'GET' => 'Select',
-        'POST' => 'Insert',
-        'PUT' => 'Update',
-        'DELETE' => 'Delete',
+        'GET' => 'select',
+        'POST' => 'insert',
+        'PUT' => 'update',
+        'DELETE' => 'delete',
         'OPTIONAL' => 'hashCode'
     ];
 
@@ -43,12 +43,49 @@ class SimpleQuery {
         $this->parseMatch($req, $query, $req->getParam('or_match'), 'OR');
         $this->parseLike($req, $query, $req->getParam('like'), 'AND');
         $this->parseLike($req, $query, $req->getParam('or_like'), 'OR');
+        $this->parseFields($req, $query);
+        $this->parseInclude($req, $query);
         $this->parseOrder($req, $query);
         $this->parsePage($req, $query);
 
         return $query;
     }
 
+    protected function parseFields($req, $query)
+    {
+        $fields = $req->getParam('fields');
+        if (empty($fields)) {
+            $query->select($query->from->field('*'));
+            return;
+        }
+        $query->select($fields);
+    }
+
+    /*
+    * left[orders]&left[addresses]=idAddress
+    *
+    */
+    protected function parseInclude($req, $query)
+    {
+        foreach (['left', 'right'] as $joinType) {
+            $includes = (array)$req->getParam($joinType);
+
+            foreach ($includes as $table => $include)
+            {
+                if (empty($include)) {
+                    $model = \Simple\Factory::model($table);
+                    $query->join($joinType, $model);
+                    continue;
+                }
+                $queryJoin = \Simple\Factory::query($table);
+                $queryJoin->equal(
+                    $query->from->field($include),
+                    $queryJoin->from->field($include)
+                );
+                $query->join($joinType, $queryJoin);
+            }
+        }
+    }
 
     protected function parseId($id, $query)
     {
@@ -67,7 +104,8 @@ class SimpleQuery {
                 $query->where(
                     $query->from->field($field),
                     $value,
-                    is_array($value)?'IN':'=',
+                    '=',
+                    //is_array($value)?'IN':'=',
                     $oper
                 );
             }
@@ -80,7 +118,7 @@ class SimpleQuery {
             foreach ($likes as $field => $value) {
                 $query->where(
                     $query->from->field($field),
-                    sprintf('\%%s\%', $value),
+                    sprintf('%s%%', $value),
                     'LIKE',
                     $oper
                 );
@@ -101,9 +139,6 @@ class SimpleQuery {
     protected function parsePage($req, $query) {
         $page = (int)$req->getParam('page') ?: 1;
         $query->page($page, self::DEFAULT_PER_PAGE);
-    }
-
-    protected function parseInclude($req, $query) {
     }
 
 

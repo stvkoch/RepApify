@@ -15,9 +15,10 @@ class ParseQuery {
     public function __invoke(ReqInterface $req, ResInterface $res, $next)
     {
         $route = $req->getAttribute('route');
-        $table = $route->getArgument('table');
-        if ($this->container->has('interpreter_'.$table)) {
-            $interpreter = $this->container->get('interpreter_'.$table);
+        $table = strtolower($route->getArgument('table'));
+
+        if ($this->container->has('interpreter'.$table)) {
+            $interpreter = $this->container->get('interpreter'.$table);
         }
 
         if (!isset($interpreter)) {

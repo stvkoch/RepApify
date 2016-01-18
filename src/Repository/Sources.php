@@ -12,13 +12,21 @@ class Sources {
         $this->container = $container;
     }
 
-    public function source($table)
+    /**
+    * choose what source whe can call
+    */
+    public function source(ReqInterface $req)
     {
-        if ($this->container->has('source_'.$table)) {
-            return $this->container->get('source_'.$table);
+        $route = $req->getAttribute('route');
+        $table = strtolower($route->getArgument('table'));
+        // you can create a item container that can fetch from
+        // expecific source data
+        if ($this->container->has('source'.$table)) {
+            return $this->container->get('source'.$table);
         }
 
-        $source = $this->container->get('source_to_all');
+        $source = $this->container->get('sourceToAll');
+
         return $source;
     }
 }

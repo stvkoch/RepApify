@@ -14,18 +14,14 @@ class RetrieveData {
 
     public function __invoke(ReqInterface $req, ResInterface $res)
     {
-        $route = $req->getAttribute('route');
-        $table = $route->getArgument('table');
-
         $query = $this->container->get('query');
-
         $repository = $this->container->get('repository');
-
         // each table could belogn to different source
-        $source = $repository->source($table);
+        $source = $repository->source($req);
 
         $data = $source->call($query);
-        $res->getBody()->write($data);
+        $res = $res->withHeader('Content-type', 'application/json');
+        $res->getBody()->write(json_encode($data));
 
         return $res;
     }

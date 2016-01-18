@@ -2,7 +2,8 @@
 $container = new \Slim\Container([
     'query' => null,
     'settings' => [
-        'determineRouteBeforeAppMiddleware' => true
+        'determineRouteBeforeAppMiddleware' => true,
+        'displayErrorDetails' => true
     ]
 ]);
 
@@ -42,9 +43,17 @@ $container['repository'] = function ($container) {
 @var Respository Source SimpleAll
 handler all connections
 */
-$container['source_to_all'] = function ($container) {
+$container['sourceToAll'] = function ($container) {
     return new \ApiLayer\Repository\SourceSimpleAll($container);
 };
 
+$container['connectionRead'] = function ($container) {
+    $pdo = new PDO('sqlite:'.__DIR__.'/../../data/development.sqlite3');
+    $pdo->setAttribute(
+        PDO::ATTR_ERRMODE,
+        PDO::ERRMODE_EXCEPTION
+    );
+    return $pdo;
+};
 
 return $container;

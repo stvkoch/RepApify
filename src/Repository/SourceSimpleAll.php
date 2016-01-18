@@ -4,7 +4,8 @@ namespace ApiLayer\Repository;
 use Psr\Http\Message\ServerRequestInterface as ReqInterface;
 use Psr\Http\Message\ResponseInterface as ResInterface;
 
-class SourceSimpleAll{
+class SourceSimpleAll implements SourceInterface
+{
 
     protected $container;
 
@@ -14,8 +15,11 @@ class SourceSimpleAll{
 
     public function call($query)
     {
-        //$con = $this->container->get('connection_read');
-        return ''.$query;
+        $con = $this->container->get('connectionRead');
+        $stmt = $con->prepare($query->sql());
+        $query->bind($stmt);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
 
